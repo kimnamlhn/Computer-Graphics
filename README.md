@@ -1,4 +1,5 @@
 # Computer-Graphics
 
-'Name: Le Hoai Nam'
-'Student ID: 18120468'
+<p>Name: Le Hoai Nam</p>
+<p>MSSV: 18120468</p>
+
