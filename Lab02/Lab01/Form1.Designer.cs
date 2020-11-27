@@ -39,6 +39,7 @@
         private System.Windows.Forms.Timer timer_Drawing;
         private System.Windows.Forms.ColorDialog colorDialog;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button btnPolygon;
     }
 }
 

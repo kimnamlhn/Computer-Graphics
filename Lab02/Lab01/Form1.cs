@@ -45,11 +45,8 @@ namespace Lab01
 //***************************Khởi tạo các thành phần trong chương trình******************************************
         private void InitializeComponent()
         {
-            // khung chứa và khung vẽ
             this.components = new System.ComponentModel.Container();
             this.openGLControl = new SharpGL.OpenGLControl();
-
-            // button vẽ của các hình
             this.btnEllipse = new System.Windows.Forms.Button();
             this.btnCircle = new System.Windows.Forms.Button();
             this.BtnHexagon = new System.Windows.Forms.Button();
@@ -57,18 +54,15 @@ namespace Lab01
             this.btnRectangle = new System.Windows.Forms.Button();
             this.btnLine = new System.Windows.Forms.Button();
             this.btnTriangle = new System.Windows.Forms.Button();
-
-            //các componnent liên quan đến thời gian
-            this.textBox1 = new System.Windows.Forms.TextBox(); 
-            this.timer_Drawing = new System.Windows.Forms.Timer(this.components); 
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.timer_Drawing = new System.Windows.Forms.Timer(this.components);
             this.lb_Time = new System.Windows.Forms.Label();
-
+            this.btnPolygon = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl)).BeginInit();
             this.SuspendLayout();
-           
-
-
-            // opnenGL control
+            // 
+            // openGLControl
+            // 
             this.openGLControl.DrawFPS = false;
             this.openGLControl.Location = new System.Drawing.Point(3, 69);
             this.openGLControl.Name = "openGLControl";
@@ -83,18 +77,9 @@ namespace Lab01
             this.openGLControl.MouseDown += new System.Windows.Forms.MouseEventHandler(this.openGLControl_MouseDown);
             this.openGLControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.openGLControl_MouseMove);
             this.openGLControl.MouseUp += new System.Windows.Forms.MouseEventHandler(this.openGLControl_MouseUp);
-         
-            // label chỉ thời gian
-            this.lb_Time.AutoSize = true;
-            this.lb_Time.Location = new System.Drawing.Point(740, 20);
-            this.lb_Time.Name = "lb_Time";
-            this.lb_Time.Size = new System.Drawing.Size(37, 13);
-            this.lb_Time.TabIndex = 21;
-            this.lb_Time.Text = "0:00.0";
-            //  đếm thời gian
-            this.timer_Drawing.Tick += new System.EventHandler(this.timerDrawingTick);
-
-            // button elipse
+            // 
+            // btnEllipse
+            // 
             this.btnEllipse.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnEllipse.Location = new System.Drawing.Point(295, 12);
             this.btnEllipse.Name = "btnEllipse";
@@ -103,9 +88,9 @@ namespace Lab01
             this.btnEllipse.Text = "Ellipse";
             this.btnEllipse.UseVisualStyleBackColor = true;
             this.btnEllipse.Click += new System.EventHandler(this.btnEllipse_Click);
-
-
-            // button hình tròn
+            // 
+            // btnCircle
+            // 
             this.btnCircle.Location = new System.Drawing.Point(106, 12);
             this.btnCircle.Name = "btnCircle";
             this.btnCircle.Size = new System.Drawing.Size(70, 25);
@@ -113,9 +98,9 @@ namespace Lab01
             this.btnCircle.Text = "Circle";
             this.btnCircle.UseVisualStyleBackColor = true;
             this.btnCircle.Click += new System.EventHandler(this.btnCircle_Click);
-
-
-            // button hình lục giác
+            // 
+            // BtnHexagon
+            // 
             this.BtnHexagon.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.BtnHexagon.Location = new System.Drawing.Point(576, 12);
             this.BtnHexagon.Name = "BtnHexagon";
@@ -124,9 +109,9 @@ namespace Lab01
             this.BtnHexagon.Text = "Hexagon";
             this.BtnHexagon.UseVisualStyleBackColor = true;
             this.BtnHexagon.Click += new System.EventHandler(this.BtnHexagon_Click);
-
-
-            // button hình ngũ giác
+            // 
+            // btnPentagon
+            // 
             this.btnPentagon.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnPentagon.Location = new System.Drawing.Point(482, 12);
             this.btnPentagon.Name = "btnPentagon";
@@ -135,8 +120,9 @@ namespace Lab01
             this.btnPentagon.Text = "Pentagon";
             this.btnPentagon.UseVisualStyleBackColor = true;
             this.btnPentagon.Click += new System.EventHandler(this.btnPentagon_Click);
-
-            // button hình chữ nhật
+            // 
+            // btnRectangle
+            // 
             this.btnRectangle.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnRectangle.Location = new System.Drawing.Point(205, 12);
             this.btnRectangle.Name = "btnRectangle";
@@ -145,9 +131,9 @@ namespace Lab01
             this.btnRectangle.Text = "Rectangle";
             this.btnRectangle.UseVisualStyleBackColor = true;
             this.btnRectangle.Click += new System.EventHandler(this.btnRectangle_Click);
-
-
-            // button đường thẳng
+            // 
+            // btnLine
+            // 
             this.btnLine.Enabled = false;
             this.btnLine.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnLine.Location = new System.Drawing.Point(12, 12);
@@ -157,9 +143,9 @@ namespace Lab01
             this.btnLine.Text = "Line";
             this.btnLine.UseVisualStyleBackColor = true;
             this.btnLine.Click += new System.EventHandler(this.btnLine_Click);
-
-
-            // button tam giác đều
+            // 
+            // btnTriangle
+            // 
             this.btnTriangle.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnTriangle.Location = new System.Drawing.Point(385, 12);
             this.btnTriangle.Name = "btnTriangle";
@@ -168,19 +154,44 @@ namespace Lab01
             this.btnTriangle.Text = "Triangle";
             this.btnTriangle.UseVisualStyleBackColor = true;
             this.btnTriangle.Click += new System.EventHandler(this.btnTriangle_Click);
-
-
-            // text box ghi chữ thôi =))
-            this.textBox1.Location = new System.Drawing.Point(664, 17);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(664, 43);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(70, 20);
             this.textBox1.TabIndex = 22;
             this.textBox1.Text = "Drawing time:";
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
-
-
-            // khung làm việc
+            // 
+            // timer_Drawing
+            // 
+            this.timer_Drawing.Tick += new System.EventHandler(this.timerDrawingTick);
+            // 
+            // lb_Time
+            // 
+            this.lb_Time.AutoSize = true;
+            this.lb_Time.Location = new System.Drawing.Point(740, 46);
+            this.lb_Time.Name = "lb_Time";
+            this.lb_Time.Size = new System.Drawing.Size(37, 13);
+            this.lb_Time.TabIndex = 21;
+            this.lb_Time.Text = "0:00.0";
+            // 
+            // button1
+            // 
+            this.btnPolygon.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnPolygon.Location = new System.Drawing.Point(675, 12);
+            this.btnPolygon.Name = "button1";
+            this.btnPolygon.Size = new System.Drawing.Size(70, 25);
+            this.btnPolygon.TabIndex = 23;
+            this.btnPolygon.Text = "Polygon";
+            this.btnPolygon.UseVisualStyleBackColor = true;
+            this.btnPolygon.Click += new System.EventHandler(this.btnPolygon_Click);
+            // 
+            // Lab01
+            // 
             this.ClientSize = new System.Drawing.Size(780, 516);
+            this.Controls.Add(this.btnPolygon);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.lb_Time);
             this.Controls.Add(this.btnEllipse);
@@ -307,15 +318,90 @@ namespace Lab01
         }
 
 
-//***************************Các action của chuột******************************************
+        //***************************Các action của chuột******************************************
+
+        //private void openGLControl_MouseDown(object sender, MouseEventArgs e)
+        //{
+
+        //    pStart.setPoint(e.Location.X, openGLControl.Height - e.Location.Y);
+
+        //    isDrawing = true;
+
+        //    timer_Drawing.Start();
+        //    timeDrawing = 0;
+        //    switch (currentMode)
+        //    {
+        //        case Mode.Line:
+        //            currentShape = new Line();
+        //            break;
+        //        case Mode.Triangle:
+        //            currentShape = new Triangle();
+        //            break;
+        //        case Mode.Rectangle:
+        //            currentShape = new Rectangle();
+        //            break;
+        //        case Mode.Circle:
+        //            currentShape = new Circle();
+        //            break;
+        //        case Mode.Ellipse:
+        //            currentShape = new Ellipse();
+        //            break;
+        //        case Mode.Pentagon:
+        //            currentShape = new Pentagon();
+        //            break;
+        //        case Mode.Hexagon:
+        //            currentShape = new Hexagon();
+        //            break;
+        //    }
+        //    currentShape.LineColor = currentLineColor;
+        //}
+
+        //private void openGLControl_MouseMove(object sender, MouseEventArgs e)
+        //{
+        //    if (!isDrawing) return;
+        //    pEnd.setPoint(e.Location.X, openGLControl.Height - e.Location.Y); //Cập nhật điểm chặn cuối khi di chuyển chuột
+
+        //    //Đang vẽ hình
+        //    currentShape.set(pStart, pEnd); //Cập nhật kích thước hình đang vẽ      
+        //    renderShapes();
+        //    currentShape.Draw(gl);
+        //    gl.Flush();
+        //}
+
+        //private void openGLControl_MouseUp(object sender, MouseEventArgs e)
+        //{
+
+        //    isDrawing = false;
+        //    //Hoàn thành vẽ hình
+        //    timer_Drawing.Stop();
+        //    //Thêm hình mới vào danh sách các hình đã vẽ
+        //    shapes.Add(currentShape);
+        //}
+
 
         private void openGLControl_MouseDown(object sender, MouseEventArgs e)
         {
 
             pStart.setPoint(e.Location.X, openGLControl.Height - e.Location.Y);
+            // vẽ đa giác
+            if (currentMode == Mode.Polygon)
+            {
+                if (!isDrawing)
+                {
+                    renderShapes();
+                    currentShape = new MultiP_Poly();
+                    //currentShape.FillColor = currentFillColor;
+                    isDrawing = true;
+                    timer_Drawing.Start();
+                    timeDrawing = 0;
+
+                }
+                return;
+            }
 
             isDrawing = true;
 
+            //Chế độ chọn hình
             timer_Drawing.Start();
             timeDrawing = 0;
             switch (currentMode)
@@ -342,32 +428,65 @@ namespace Lab01
                     currentShape = new Hexagon();
                     break;
             }
-            currentShape.LineColor = currentLineColor;
+
+            //currentShape.FillColor = currentFillColor;
         }
 
         private void openGLControl_MouseMove(object sender, MouseEventArgs e)
         {
             if (!isDrawing) return;
             pEnd.setPoint(e.Location.X, openGLControl.Height - e.Location.Y); //Cập nhật điểm chặn cuối khi di chuyển chuột
+            if (currentMode == Mode.Polygon)
+            {
+                ((MultiP_Poly)currentShape).moveVertex(pEnd);
+                renderShapes();
+                currentShape.Draw(gl);
+            }
 
             //Đang vẽ hình
             currentShape.set(pStart, pEnd); //Cập nhật kích thước hình đang vẽ      
             renderShapes();
+            //currentShape.Fill(gl, currentModeFill);
             currentShape.Draw(gl);
             gl.Flush();
         }
 
         private void openGLControl_MouseUp(object sender, MouseEventArgs e)
         {
+            if (currentMode == Mode.Polygon)
+            {
+                if (isDrawing)
+                {
+                    if (e.Button == System.Windows.Forms.MouseButtons.Right)    //Kết thúc vẽ một đa giác
+                    {
+                        shapes.Add(((MultiP_Poly)currentShape).getPolygon());
+                       // n_shapes++;
+                        isDrawing = false;
+                        timer_Drawing.Stop();
+                        renderShapes();
+                    }
+                    else
+                    {
+                        if (((MultiP_Poly)currentShape).nPoly == 0)
+                        {
+                            ((MultiP_Poly)currentShape).addVertex(new Point(e.Location.X, openGLControl.Height - e.Location.Y));
+                        }
+                        ((MultiP_Poly)currentShape).addVertex(new Point(e.Location.X, openGLControl.Height - e.Location.Y));
+                        currentShape.Draw(gl);
+                    }
+                }
+                return;
+            }
 
             isDrawing = false;
-            //Hoàn thành vẽ hình
+
+            //Hoàn tất vẽ hình
             timer_Drawing.Stop();
             //Thêm hình mới vào danh sách các hình đã vẽ
             shapes.Add(currentShape);
         }
 
-//****************************************************************************************************
+        //****************************************************************************************************
 
         // đếm thời gian
         private void timerDrawingTick(object sender, EventArgs e)
@@ -416,6 +535,19 @@ namespace Lab01
         {
             gl.ClearColor(1f, 1f, 1f, 1f);
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+        }
+
+        private void btnPolygon_Click(object sender, EventArgs e)
+        {
+            btnLine.Enabled = true;
+            btnCircle.Enabled = true;
+            btnRectangle.Enabled = true;
+            btnEllipse.Enabled = true;
+            btnTriangle.Enabled = true;
+            btnPentagon.Enabled = true;
+            BtnHexagon.Enabled = true;
+            btnPolygon.Enabled = false;
+            currentMode = Mode.Polygon;
         }
 
 
