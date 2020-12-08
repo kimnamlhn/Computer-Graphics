@@ -18,12 +18,26 @@ namespace Lab01
         protected Point p1 = new Point();
         protected Point p2 = new Point();
 
+        public double Angle { get; set; } = 0.0;
+
+
         public virtual void set(Point A, Point B)
         {
             p1.setPoint(Math.Min(A.X, B.X), Math.Min(A.Y, B.Y));
             p2.setPoint(Math.Max(A.X, B.X), Math.Max(A.X, B.X));
         }
         public virtual void Draw(OpenGL gl) { }
+        //hình đang được chọn hay không
+        public virtual bool isChooseObject(int x, int y) { return false; }
+        //điểm đang được chọn hay không
+        public virtual int isControlPointChoose(int x, int y) { return -1; }
+        //di chuyển hình
+        public virtual void translate(Point s, Point e) { }
+        //Co giản hình 
+        public virtual void dragObject(int CPid, Point s, Point e) { }
+        //Vẽ khung bao quanh hình, điểm điều khiển
+        public virtual void drawControlBox(OpenGL gl) { }
+
     }
 
     //điểm
@@ -172,7 +186,7 @@ namespace Lab01
     }
 
     //elipse
-    class Ellipse : Shape
+    class Ellipse : AffineObject
     {
         public override void set(Point A, Point B)
         {
@@ -195,6 +209,7 @@ namespace Lab01
             gl.Color(LineColor.R, LineColor.G, LineColor.B);
             gl.PushMatrix();
             gl.Translate(cx, cy, 0.0);
+            gl.Rotate(Angle, 0.0, 0.0, 1.0);
             gl.Begin(OpenGL.GL_POINTS);
             int u, v;
 
@@ -334,6 +349,88 @@ namespace Lab01
             gl.Vertex2sv(new short[] { (short)p2.X, (short)p2.Y });
             gl.End();
         }
+
+        public override bool isChooseObject(int x, int y)
+        {
+            if (Math.Abs(y - p1.Y) <= 2.0 && Math.Abs(p2.Y - p1.Y) <= 2.0)
+                return (x >= p1.X && x <= p2.X) || (x < p1.X && x > p2.X);
+            if (Math.Abs(x - p1.X) <= 2.0 && Math.Abs(p2.X - p1.X) <= 2.0)
+                return (y >= p1.Y && y <= p2.Y) || (y < p1.Y && y > p2.Y);
+
+            double a = (double)(x - p1.X) / (y - p1.Y), b = (double)(p2.X - p1.X) / (p2.Y - p1.Y);
+            return (Math.Abs(a - b) < 0.5);
+        }
+
+        public override void translate(Point s, Point e)
+        {
+            //Vector tịnh tiến
+            int vx = e.X - s.X,
+                vy = e.Y - s.Y;
+
+            //Tịnh tiến các điểm điều khiển
+            p1.X += vx;
+            p2.X += vx;
+            p1.Y += vy;
+            p2.Y += vy;
+        }
+
+        public override int isControlPointChoose(int x, int y)
+        {
+            //Tọa độ các điểm điều khiển
+            int[][] cp = new int[][] {
+                new int[]{p1.X, p1.Y},
+                 new int[]{ p2.X, p2.Y }
+            };
+
+            //Xác định điểm được chọn
+            for (int i = 0; i < 2; i++)
+            {
+                if (x >= cp[i][0] - 5 && x <= cp[i][0] + 5 && y >= cp[i][1] - 5 && y <= cp[i][1] + 5)
+                    return i;
+            }
+            return -1;
+        }
+
+        public override void dragObject(int CPid, Point s, Point e)
+        {
+            //Vector tịnh tiến
+            int vx = e.X - s.X,
+                vy = e.Y - s.Y;
+
+            int x1 = p1.X, y1 = p1.Y, x2 = p2.X, y2 = p2.Y;
+            Point pu = new Point(), pv = new Point();
+            pu.setPoint(p1); pv.setPoint(p2);
+
+            //Co giãn hình
+            if (CPid == 0)
+                pu.setPoint(x1 + vx, y1 + vy);
+            else
+                pv.setPoint(x2 + vx, y2 + vy);
+
+            p1.setPoint(pu);
+            p2.setPoint(pv);
+        }
+
+        public override void drawControlBox(OpenGL gl)
+        {
+            Rectangle box = new Rectangle();
+            Color c = new Color(0.5f, 0.5f, 0.5f);
+            box.LineColor = c;
+
+            //Tọa độ các điểm điều khiển
+            int[][] cp = new int[][] {
+                new int[]{p1.X, p1.Y},
+                 new int[]{ p2.X, p2.Y }
+            };
+
+            //Vẽ các điểm điều khiển
+            foreach (int[] p in cp)
+            {
+                box.set(new Point(p[0] - 3, p[1] - 3), new Point(p[0] + 3, p[1] + 3));
+                box.Draw(gl);
+                gl.Flush();
+            }
+        }
     }
 
     //hình n đỉnh 
@@ -430,7 +527,7 @@ namespace Lab01
     }
 
     //đa giác
-    class Polygon : Shape
+    class Polygon : AffineObject
     {
         public int nPoly = 0;
         public Point[] nPoints;
@@ -456,6 +553,7 @@ namespace Lab01
             int cx = (p1.X + p2.X) / 2, cy = (p1.Y + p2.Y) / 2;
             gl.PushMatrix();
             gl.Translate(cx, cy, 0.0);
+            gl.Rotate(Angle, 0.0, 0.0, 1.0);
             gl.Scale((double)(p2.X - p1.X) / (p2r.X - p1r.X), (double)(p2.Y - p1.Y) / (p2r.Y - p1r.Y), 0.0);
 
             Point start = new Point(), end = new Point();
@@ -521,14 +619,214 @@ namespace Lab01
         }
     }
 
-    //dạng
-    class Shape : Object
+    //lớp biến đổi affine
+    class AffineObject : Object
     {
-
         public override void set(Point pi, Point pj)
         {
             p1.setPoint(pi.X < pj.X ? pi.X : pj.X, pi.Y < pj.Y ? pi.Y : pj.Y);
             p2.setPoint(pi.X > pj.X ? pi.X : pj.X, pi.Y > pj.Y ? pi.Y : pj.Y);
+        }
+
+        //hình có đang được chọn hay không
+        public override bool isChooseObject(int x, int y)
+        {
+            int cx = (p1.X + p2.X) / 2, cy = (p1.Y + p2.Y) / 2;
+            x -= cx;
+            y -= cy;
+            int u = (int)Math.Round(x * Math.Cos(-Angle * Math.PI / 180) - y * Math.Sin(-Angle * Math.PI / 180)),
+                v = (int)Math.Round(y * Math.Cos(-Angle * Math.PI / 180) + x * Math.Sin(-Angle * Math.PI / 180));
+            x = u; y = v;
+            return !(x < p1.X - cx || x > p2.X - cx || y < p1.Y - cy || y > p2.Y - cy);
+        }
+
+        //điểm có đang được chọn hay không
+        public override int isControlPointChoose(int x, int y)
+        {
+            int cx = 0, cy = 0;
+            if (Angle != 0)
+            {
+                cx = (p1.X + p2.X) / 2; cy = (p1.Y + p2.Y) / 2;
+                x -= cx;
+                y -= cy;
+                int u = (int)Math.Round(x * Math.Cos(-Angle * Math.PI / 180) - y * Math.Sin(-Angle * Math.PI / 180)),
+                    v = (int)Math.Round(y * Math.Cos(-Angle * Math.PI / 180) + x * Math.Sin(-Angle * Math.PI / 180));
+                x = u; y = v;
+            }
+
+            int x1 = p1.X - cx - 5,
+                y1 = p1.Y - cy - 5,
+                x2 = p2.X - cx + 5,
+                y2 = p2.Y - cy + 5;
+            int xm = cx == 0 ? (p1.X + p2.X) / 2 : 0,
+                ym = cy == 0 ? (p1.Y + p2.Y) / 2 : 0;
+
+
+            // các điểm điều khiển
+            int[][] cp = new int[][] {
+                new int[]{x1, y1},
+                new int[]{x2, y2},
+                new int[]{x1, y2},
+                new int[]{x2, y1},
+                new int[]{x1, ym},
+                new int[]{x2, ym},
+                new int[]{xm, y1},
+                new int[]{xm, y2},
+                new int[]{xm, y2 + 20}
+            };
+
+            for (int i = 0; i < 9; i++)
+            {
+                if (x >= cp[i][0] - 5 && x <= cp[i][0] + 5 && y >= cp[i][1] - 5 && y <= cp[i][1] + 5)
+                    return i;         
+            }
+            return -1;
+        }
+
+        //co giãn hình
+        public override void dragObject(int CPid, Point s, Point e)
+        {
+            int vx = e.X - s.X,
+                vy = e.Y - s.Y;
+
+            if (CPid == 8)
+            {
+                int cx = (p1.X + p2.X) / 2, cy = (p1.Y + p2.Y) / 2;
+                Point v1 = new Point(s.X - cx, s.Y - cy), v2 = new Point(e.X - cx, e.Y - cy);
+                // góc xoay
+                double alpha = Math.Acos((v1.X * v2.X + v1.Y * v2.Y) / (Math.Sqrt(v1.X * v1.X + v1.Y * v1.Y) * Math.Sqrt(v2.X * v2.X + v2.Y * v2.Y))) / Math.PI * 180.0;
+                if (v1.X * v2.Y - v2.X * v1.Y < 0) alpha *= -1;
+                Angle = alpha;
+                return;
+            }
+
+            //Chiều cao và rộng hình
+            int h = p2.Y - p1.Y,
+                w = p2.X - p1.X;
+
+            int x1 = p1.X, y1 = p1.Y, x2 = p2.X, y2 = p2.Y;
+            Point pu = new Point(), pv = new Point();
+            pu.setPoint(p1); pv.setPoint(p2);
+
+
+            if (CPid == 1 || CPid == 5 || CPid == 3)
+            {
+                if (-vx >= w)
+                    vx = 1 - w;
+            }
+
+            else if (CPid == 2 || CPid == 4 || CPid == 0)
+            {
+                if (vx >= w)
+                    vx = w - 1;
+            }
+
+            if (CPid == 2 || CPid == 7 || CPid == 1)
+            {
+                if (-vy >= h)
+                    vy = 1 - h;
+            }
+            else if (CPid == 0 || CPid == 6 || CPid == 3)
+            {
+                if (vy >= h)
+                    vy = h - 1;
+            }
+
+            //Co giãn điểm điều khiển
+            switch (CPid)
+            {
+                case 0:
+                    pu.setPoint(x1 + vx, y1 + vy);
+                    break;
+                case 1:
+                    pv.setPoint(x2 + vx, y2 + vy);
+                    break;
+                case 2:
+                    pu.setPoint(x1 + vx, y1);
+                    pv.setPoint(x2, y2 + vy);
+                    break;
+                case 3:
+                    pu.setPoint(x1, y1 + vy);
+                    pv.setPoint(x2 + vx, y2);
+                    break;
+                case 4:
+                    pu.setPoint(x1 + vx, y1);
+                    break;
+                case 5:
+                    pv.setPoint(x2 + vx, y2);
+                    break;
+                case 6:
+                    pu.setPoint(x1, y1 + vy);
+                    break;
+                case 7:
+                    pv.setPoint(x2, y2 + vy);
+                    break;
+            }
+
+            p1.setPoint(pu);
+            p2.setPoint(pv);
+        }
+
+        // vẽ khung bao quanh hình
+        public override void drawControlBox(OpenGL gl)
+        {
+            int cx = (p1.X + p2.X) / 2,
+                cy = (p1.Y + p2.Y) / 2;
+            gl.Color(LineColor.R, LineColor.G, LineColor.B);
+            gl.PushMatrix();
+            gl.Translate(cx, cy, 0.0);
+            gl.Rotate(Angle, 0.0, 0.0, 1.0);
+
+            Rectangle box = new Rectangle();
+            int x1 = p1.X - cx - 5, y1 = p1.Y - cy - 10, x2 = p2.X - cx + 5, y2 = p2.Y - cy + 10;
+            Point pi = new Point(x1, y1),
+                pj = new Point(x2, y2);
+            box.LineColor = new Color(0.5f, 0.5f, 0.5f);
+
+            //Vẽ khung 
+            box.set(pi, pj);
+            box.Draw(gl);
+
+            //Vẽ điểm điều khiển
+            int xm = 0, 
+               ym = 0;
+            int[][] cp = new int[][] {
+                new int[]{x1, y1},
+                new int[]{x2, y2},
+                new int[]{x1, y2},
+                new int[]{x2, y1},
+                new int[]{x1, ym},
+                new int[]{x2, ym},
+                new int[]{xm, y1},
+                new int[]{xm, y2},
+            };
+            foreach (int[] p in cp)
+            {
+                box.set(new Point(p[0] - 3, p[1] - 3), new Point(p[0] + 3, p[1] + 3));
+                box.Draw(gl);
+            }
+
+            Line li = new Line();
+            li.set(new Point(xm, y2), new Point(xm, y2 + 20 - 4));
+            li.LineColor = new Color(0.5f, 0.5f, 0.5f);
+            li.Draw(gl);
+
+            Circle ci = new Circle();
+            ci.set(new Point(xm - 3, y2 + 20 - 3), new Point(xm + 3, y2 + 20 + 3));
+            ci.LineColor = new Color(0.5f, 0.5f, 0.5f);
+            ci.Draw(gl);
+            gl.PopMatrix();
+        }
+
+        public override void translate(Point s, Point e)
+        {
+            int vx = e.X - s.X,
+                vy = e.Y - s.Y;
+
+            p1.X += vx;
+            p1.Y += vy;
+            p2.X += vx;
+            p2.Y += vy;
         }
 
     }
