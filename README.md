@@ -1,5 +1,11 @@
 # Computer-Graphics
+Đồ hoạ máy tính
 
-<p>Name: Le Hoai Nam</p>
-<p>MSSV: 18120468</p>
+# Description
+Repo chứa source code và báo cáo môn Đồ hoạ máy tính
+
+# Table of contents
+Lab 123: 2D Program
+
+Lab 04: 3D Program
 
